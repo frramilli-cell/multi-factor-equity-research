@@ -22,20 +22,11 @@ def winsorize_cross_section(
 ) -> pd.DataFrame:
     """Winsorize selected columns independently within each date."""
     out = frame.copy()
-
-    def _clip(group: pd.DataFrame) -> pd.DataFrame:
-        g = group.copy()
-        for col in columns:
-            lo = g[col].quantile(lower)
-            hi = g[col].quantile(upper)
-            g[col] = g[col].clip(lo, hi)
-        return g
-
-    return (
-        out.groupby("date", group_keys=False, sort=False)
-        .apply(_clip, include_groups=False)
-        .reset_index(drop=True)
-    )
+    for col in columns:
+        lower_bound = out.groupby("date")[col].transform(lambda s: s.quantile(lower))
+        upper_bound = out.groupby("date")[col].transform(lambda s: s.quantile(upper))
+        out[col] = out[col].clip(lower=lower_bound, upper=upper_bound)
+    return out
 
 
 def zscore_cross_section(frame: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
