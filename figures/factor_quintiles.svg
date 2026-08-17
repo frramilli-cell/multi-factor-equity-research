@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="560" viewBox="0 0 1000 560">
+<rect width="1000" height="560" fill="white"/>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#111}.title{font-size:28px;font-weight:700}.sub{font-size:14px;fill:#555}.axis{font-size:13px;fill:#666}.legend{font-size:14px}.grid{stroke:#e7e7e7;stroke-width:1}.value{stroke:#111;stroke-width:4;fill:none}.quality{stroke:#777;stroke-width:2.5;fill:none}.strength{stroke:#aaa;stroke-width:2.5;fill:none;stroke-dasharray:7 6}.momentum{stroke:#555;stroke-width:2.5;fill:none;stroke-dasharray:2 6}
+</style>
+<text x="70" y="52" class="title">Average Forward Return by Factor Quintile</text>
+<text x="70" y="78" class="sub">Q1 = lowest factor score; Q5 = highest factor score</text>
+<line x1="90" y1="450" x2="930" y2="450" stroke="#222" stroke-width="1.2"/>
+<line x1="90" y1="370" x2="930" y2="370" class="grid"/><line x1="90" y1="290" x2="930" y2="290" class="grid"/><line x1="90" y1="210" x2="930" y2="210" class="grid"/><line x1="90" y1="130" x2="930" y2="130" class="grid"/>
+<text x="45" y="454" class="axis">15%</text><text x="45" y="374" class="axis">20%</text><text x="45" y="294" class="axis">25%</text><text x="45" y="214" class="axis">30%</text>
+<text x="125" y="480" class="axis">Q1</text><text x="315" y="480" class="axis">Q2</text><text x="505" y="480" class="axis">Q3</text><text x="695" y="480" class="axis">Q4</text><text x="885" y="480" class="axis">Q5</text>
+<!-- y scale: 15%=450, 30%=210 -->
+<polyline points="130,400 320,402 510,383 700,297 890,231" class="value"/>
+<polyline points="130,267 320,391 510,339 700,349 890,371" class="quality"/>
+<polyline points="130,322 320,302 510,382 700,392 890,338" class="strength"/>
+<polyline points="130,235 320,285 510,392 700,393 890,416" class="momentum"/>
+<circle cx="890" cy="231" r="5" fill="#111"/><text x="900" y="224" class="axis">28.68%</text>
+<text x="565" y="520" class="legend">Value</text><line x1="525" y1="515" x2="555" y2="515" class="value"/>
+<text x="675" y="520" class="legend">Quality</text><line x1="630" y1="515" x2="665" y2="515" class="quality"/>
+<text x="805" y="520" class="legend">Strength</text><line x1="760" y1="515" x2="795" y2="515" class="strength"/>
+<text x="925" y="520" class="legend">Momentum</text><line x1="875" y1="515" x2="915" y2="515" class="momentum"/>
+</svg>
