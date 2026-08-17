@@ -1,8 +1,9 @@
-numpy
-pandas
-scipy
-matplotlib
-statsmodels
-scikit-learn
-pyarrow
-jupyter
+numpy>=2.0,<3
+pandas>=2.2,<3
+scipy>=1.13,<2
+matplotlib>=3.9,<4
+statsmodels>=0.14,<1
+scikit-learn>=1.5,<2
+pyarrow>=17,<20
+jupyter>=1.0,<2
+pytest>=8,<9
