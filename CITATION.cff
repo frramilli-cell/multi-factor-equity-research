@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this research code, please cite it as below."
+title: "Multi-Factor Equity Research & Backtesting"
+type: software
+authors:
+  - family-names: Rramilli
+    given-names: Fiona
+year: 2026
+license: MIT
+repository-code: "https://github.com/frramilli-cell/multi-factor-equity-research"
+keywords:
+  - factor investing
+  - equity research
+  - backtesting
+  - quantitative finance
+  - SEC XBRL
