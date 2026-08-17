@@ -1,90 +1,134 @@
 # Multi-Factor Equity Research & Backtesting
 
-Systematic equity research using historical S&P 500 constituents and SEC fundamental data to study whether a transparent, rules-based multi-factor framework can identify stocks with stronger risk-adjusted characteristics.
+A point-in-time equity research project testing whether a sector-relative combination of **Value, Quality, Financial Strength, and Momentum** can outperform the S&P 500.
 
-This repository is structured as an end-to-end research workflow: data preparation, factor construction, cross-sectional ranking, portfolio formation, backtesting, performance evaluation, and robustness analysis.
+The project began with a strong-looking backtest, but an audit identified a material survivorship-bias problem: using today's S&P 500 constituents in earlier periods leaks future information into the investment universe. I rebuilt the universe historically and reran the model without changing the factor logic.
 
-> **Project status:** Core research engine implemented. Empirical outputs will be added only after source data are loaded, cleaned, and validated.
+> **Main finding:** after correcting the investment universe, the strategy did **not** outperform SPY over the full April 2020–April 2026 sample. The correction materially changed the conclusion and became the central result of the project.
 
-## Research Objective
+That result is intentionally preserved. The goal of this repository is not to advertise a flattering backtest; it is to demonstrate disciplined empirical research, point-in-time data handling, reproducible Python implementation, and transparent interpretation.
 
-The central question is:
+## Research Design
 
-**Can a diversified combination of fundamental and market-based equity factors produce persistent risk-adjusted performance relative to a broad benchmark?**
+| Item | Specification |
+|---|---|
+| Sample | April 2020 – April 2026 |
+| Benchmark | SPY |
+| Original portfolio | Top 20 stocks, equal weighted |
+| Original rebalance frequency | Annual |
+| Factors | Value, Quality, Financial Strength, Momentum |
+| Fundamental data | SEC EDGAR / XBRL Company Facts |
+| Market data | Historical adjusted prices |
+| Corrected universe | Historical S&P 500 membership |
 
-Rather than relying on a single signal, the framework combines economically motivated factors and evaluates both their standalone and joint behavior through time.
+The original research notebook documents the empirical experiment and the survivorship-bias audit. The modular `src/` package extracts the reusable research logic into tested components.
+
+## Why the Universe Correction Matters
+
+A current S&P 500 constituent list cannot be safely projected backward through history. Companies removed from the index disappear from today's list, while later successful additions can be incorrectly treated as if they had always been investable. That creates survivorship bias and makes a historical strategy look better informed than a real investor could have been.
+
+The corrected workflow therefore:
+
+- uses historical point-in-time index membership;
+- separates portfolio-formation information from subsequent returns;
+- maps accounting data according to public filing availability, not merely fiscal-period end dates;
+- applies explicit turnover and transaction-cost logic in the modular engine;
+- keeps assumptions visible and testable.
 
 ## Factor Framework
 
-| Factor | Economic intuition | Illustrative signals |
+| Factor | Economic intuition | Example signals |
 |---|---|---|
-| Value | Relatively inexpensive securities may earn a valuation premium | Earnings yield, book-to-market, free-cash-flow yield |
-| Momentum | Recent relative winners may continue to outperform over intermediate horizons | 6–12 month price momentum |
-| Quality | Financially robust and profitable firms may compound more consistently | ROE/ROA, margins, leverage, earnings quality |
-| Low Volatility | Lower-risk equities may deliver attractive risk-adjusted returns | Realized volatility, downside risk, beta |
+| Value | Prefer securities priced more attractively relative to fundamentals | Earnings yield, book-to-market, free-cash-flow yield |
+| Momentum | Intermediate-horizon winners may exhibit return persistence | 12–1 price momentum |
+| Quality | Profitable, efficient firms may compound more consistently | ROE, gross profitability, operating margins |
+| Financial Strength / Low Risk | Stronger balance sheets and lower risk may improve resilience | Leverage, realized volatility |
 
-The implementation supports multiple raw signals per factor. Signals are winsorized and standardized cross-sectionally at each formation date before being combined into factor scores and an equal-weight composite score.
-
-## Implemented Research Pipeline
-
-1. **Signal cleaning** — date-by-date winsorization of raw signals.
-2. **Cross-sectional standardization** — z-score normalization within each formation date.
-3. **Factor construction** — aggregation of one or more standardized signals into value, momentum, quality, low-volatility, or custom factor scores.
-4. **Composite scoring** — equal-weight combination of available factor scores.
-5. **Portfolio formation** — long-only selection of the highest-ranked securities with equal weighting.
-6. **Turnover measurement** — one-way turnover including entries and exits.
-7. **Backtesting** — formation-date weights applied only to subsequent forward returns.
-8. **Transaction costs** — configurable basis-point cost applied to portfolio turnover.
-9. **Performance analysis** — cumulative wealth, annualized return, volatility, Sharpe ratio, maximum drawdown, hit rate, and best/worst periods.
-10. **Automated validation** — unit tests run through GitHub Actions.
+The modular engine winsorizes and standardizes raw signals cross-sectionally, builds factor scores, combines them into a composite score, forms systematic portfolios, measures turnover, and evaluates subsequent performance.
 
 ## Repository Structure
 
 ```text
 multi-factor-equity-research/
-├── .github/workflows/tests.yml
+├── .github/workflows/tests.yml       # CI validation
+├── multifactor_equity_research_github.ipynb
 ├── README.md
+├── LICENSE
+├── CITATION.cff
+├── pyproject.toml
 ├── requirements.txt
+├── examples/
+│   └── run_demo.py                   # simulated end-to-end smoke test
 ├── src/
-│   ├── __init__.py
-│   ├── config.py
-│   ├── factors.py
-│   ├── portfolio.py
-│   ├── backtest.py
-│   ├── metrics.py
-│   ├── pipeline.py
-│   └── README.md
+│   ├── data.py                       # price/universe ingestion
+│   ├── sec.py                        # SEC Company Facts client
+│   ├── signals.py                    # price/fundamental signals
+│   ├── factors.py                    # winsorization and factor scoring
+│   ├── portfolio.py                  # ranking, weights, turnover
+│   ├── backtest.py                   # forward-return backtest + costs
+│   ├── metrics.py                    # performance statistics
+│   ├── reporting.py                  # result exports and figures
+│   ├── pipeline.py                   # end-to-end engine
+│   └── config.py
 ├── tests/
-│   └── test_research.py
+│   ├── test_research.py
+│   └── test_data.py
 ├── data/
-│   └── README.md
+│   └── README.md                     # provenance and schemas
 ├── results/
-│   └── README.md
 ├── figures/
-│   └── README.md
 └── report/
-    └── README.md
+    └── research_note.md
 ```
 
-## Expected Input Format
+## Reproducibility
 
-The research engine intentionally separates signal construction from subsequent realized returns to reduce look-ahead risk.
+Install the environment:
 
-`signals` should contain one row per security and formation date:
+```bash
+pip install -r requirements.txt
+```
+
+Run the test suite:
+
+```bash
+python -m pytest
+```
+
+Run the deterministic simulated-data demonstration:
+
+```bash
+python examples/run_demo.py
+```
+
+The demo proves the research engine runs end to end; its output is **not** an empirical investment result.
+
+GitHub Actions runs the automated tests on every push and pull request.
+
+## Expected Data Schemas
+
+Historical adjusted prices:
 
 ```text
-date | ticker | earnings_yield | momentum_12_1 | roe | neg_volatility_12m | ...
+date | ticker | adj_close
 ```
 
-`forward_returns` should contain the return realized after that formation date:
+Historical point-in-time index membership:
 
 ```text
-date | ticker | forward_return
+date | ticker
 ```
 
-The date in both tables is therefore the **portfolio formation date**, not the end date of the subsequent holding-period return.
+Canonical point-in-time fundamentals:
 
-## Minimal Usage
+```text
+date | ticker | market_cap | net_income | book_equity | free_cash_flow |
+gross_profit | total_assets | total_debt
+```
+
+The SEC ingestion layer uses filing availability dates so that a financial statement cannot enter a portfolio before it was public. A descriptive `SEC_USER_AGENT` environment variable is required for automated SEC requests.
+
+## Core Research Engine
 
 ```python
 from src.config import BacktestConfig
@@ -97,78 +141,45 @@ factor_columns = {
     "low_volatility": ["neg_volatility_12m"],
 }
 
-config = BacktestConfig(
-    top_quantile=0.20,
-    transaction_cost_bps=10.0,
-    annualization_factor=12,
-)
-
 outputs = run_research_pipeline(
     signals=signals,
     forward_returns=forward_returns,
     factor_columns=factor_columns,
-    config=config,
+    config=BacktestConfig(
+        top_quantile=0.20,
+        transaction_cost_bps=10.0,
+        annualization_factor=12,
+    ),
 )
 
 print(outputs["summary"])
 ```
 
-## Methodological Principles
+## Research Controls
 
-The analysis is built around safeguards that matter in empirical investment research:
+The repository explicitly addresses several common backtesting failures:
 
-- no use of future information in portfolio formation;
-- explicit treatment of missing observations and extreme values;
-- consistent rebalancing and holding-period assumptions;
-- separation of signal measurement from subsequent return evaluation;
-- explicit turnover and transaction-cost treatment;
-- benchmark-relative as well as absolute performance measurement;
-- transparent reporting of assumptions and limitations.
+- **Survivorship bias:** historical rather than present-day constituent membership.
+- **Look-ahead bias:** formation-date signals are separated from subsequent returns.
+- **Accounting publication lag:** SEC facts are mapped using filing availability dates.
+- **Outliers:** configurable cross-sectional winsorization.
+- **Scale differences:** date-level z-score standardization.
+- **Trading frictions:** turnover and configurable transaction costs.
+- **Reproducibility:** modular code, dependency metadata, tests, CI, and documented schemas.
 
-## Running the Project
+## Interpretation
 
-Create a Python environment and install dependencies:
+The corrected strategy did not beat SPY over the full sample. That is the main research conclusion, not something hidden as an inconvenience. The project shows how an apparently successful model can lose its headline result after a realistic data-quality correction—and why robust investment research requires actively trying to falsify attractive findings.
 
-```bash
-pip install -r requirements.txt
-```
-
-Run the automated checks:
-
-```bash
-pytest -q
-```
-
-GitHub Actions also runs the test suite automatically on pushes and pull requests.
-
-## Performance Evaluation
-
-Once empirical data are validated, the final analysis will report, at minimum:
-
-- annualized return;
-- annualized volatility;
-- Sharpe ratio;
-- maximum drawdown;
-- cumulative wealth;
-- benchmark-relative return;
-- turnover and transaction-cost sensitivity;
-- factor-level and composite portfolio results.
-
-Charts and summary tables will be stored in `figures/` and `results/` rather than embedded as unsupported headline claims.
-
-## Data Integrity & Reproducibility
-
-Raw third-party datasets should not be committed when redistribution is restricted. The `data/` directory instead documents provenance, coverage, field definitions, and cleaning rules. Local binary datasets are excluded through `.gitignore`.
-
-The core research logic is modular rather than concentrated in one opaque notebook, making assumptions easier to inspect, test, and change.
+For the complete narrative, see [`report/research_note.md`](report/research_note.md) and the original notebook.
 
 ## Limitations
 
-Historical backtests are sensitive to data quality, universe definition, survivorship bias, factor specification, rebalancing assumptions, point-in-time availability of accounting information, transaction costs, and treatment of delisted securities. Backtested performance does not represent live investment performance and should not be interpreted as a guarantee of future returns.
+The sample is relatively short and includes unusual market regimes. Results remain sensitive to factor definitions, constituent-history quality, corporate-action handling, reporting lags, transaction costs, rebalance frequency, sector treatment, delistings, and historical fundamental coverage. Backtested performance is not live investment performance and is not evidence of future returns.
 
 ## Author
 
 **Fiona Rramilli**  
 MSc Finance — University of Neuchâtel
 
-*Independent academic/portfolio research project. For educational and research purposes only; not investment advice.*
+*Independent academic/portfolio research. For educational and research purposes only; not investment advice.*
