@@ -4,7 +4,7 @@ Systematic equity research using historical S&P 500 constituents and SEC fundame
 
 This repository is structured as an end-to-end research workflow: data preparation, factor construction, cross-sectional ranking, portfolio formation, backtesting, performance evaluation, and robustness analysis.
 
-> **Project status:** Research framework and repository structure established. Empirical outputs will be added only after the analysis is completed and validated.
+> **Project status:** Core research engine implemented. Empirical outputs will be added only after source data are loaded, cleaned, and validated.
 
 ## Research Objective
 
@@ -23,27 +23,39 @@ Rather than relying on a single signal, the framework combines economically moti
 | Quality | Financially robust and profitable firms may compound more consistently | ROE/ROA, margins, leverage, earnings quality |
 | Low Volatility | Lower-risk equities may deliver attractive risk-adjusted returns | Realized volatility, downside risk, beta |
 
-Exact definitions, data treatments, and portfolio rules are documented alongside the implementation so the analysis remains reproducible.
+The implementation supports multiple raw signals per factor. Signals are winsorized and standardized cross-sectionally at each formation date before being combined into factor scores and an equal-weight composite score.
 
-## Research Pipeline
+## Implemented Research Pipeline
 
-1. **Data preparation** — import, clean, align, and validate market and fundamental data.
-2. **Factor construction** — calculate raw factor signals while controlling for missing and extreme observations.
-3. **Cross-sectional ranking** — normalize signals to make factor scores comparable across the investment universe.
-4. **Composite scoring** — combine individual signals into a diversified multi-factor score.
-5. **Portfolio formation** — construct systematic portfolios using predefined ranking and rebalancing rules.
-6. **Backtesting** — evaluate the strategy through time while avoiding look-ahead bias.
-7. **Performance analysis** — measure return, volatility, drawdown, Sharpe ratio, and benchmark-relative behavior.
-8. **Robustness testing** — assess whether conclusions survive alternative assumptions and specifications.
+1. **Signal cleaning** — date-by-date winsorization of raw signals.
+2. **Cross-sectional standardization** — z-score normalization within each formation date.
+3. **Factor construction** — aggregation of one or more standardized signals into value, momentum, quality, low-volatility, or custom factor scores.
+4. **Composite scoring** — equal-weight combination of available factor scores.
+5. **Portfolio formation** — long-only selection of the highest-ranked securities with equal weighting.
+6. **Turnover measurement** — one-way turnover including entries and exits.
+7. **Backtesting** — formation-date weights applied only to subsequent forward returns.
+8. **Transaction costs** — configurable basis-point cost applied to portfolio turnover.
+9. **Performance analysis** — cumulative wealth, annualized return, volatility, Sharpe ratio, maximum drawdown, hit rate, and best/worst periods.
+10. **Automated validation** — unit tests run through GitHub Actions.
 
 ## Repository Structure
 
 ```text
 multi-factor-equity-research/
+├── .github/workflows/tests.yml
 ├── README.md
 ├── requirements.txt
 ├── src/
+│   ├── __init__.py
+│   ├── config.py
+│   ├── factors.py
+│   ├── portfolio.py
+│   ├── backtest.py
+│   ├── metrics.py
+│   ├── pipeline.py
 │   └── README.md
+├── tests/
+│   └── test_research.py
 ├── data/
 │   └── README.md
 ├── results/
@@ -54,22 +66,84 @@ multi-factor-equity-research/
     └── README.md
 ```
 
+## Expected Input Format
+
+The research engine intentionally separates signal construction from subsequent realized returns to reduce look-ahead risk.
+
+`signals` should contain one row per security and formation date:
+
+```text
+date | ticker | earnings_yield | momentum_12_1 | roe | neg_volatility_12m | ...
+```
+
+`forward_returns` should contain the return realized after that formation date:
+
+```text
+date | ticker | forward_return
+```
+
+The date in both tables is therefore the **portfolio formation date**, not the end date of the subsequent holding-period return.
+
+## Minimal Usage
+
+```python
+from src.config import BacktestConfig
+from src.pipeline import run_research_pipeline
+
+factor_columns = {
+    "value": ["earnings_yield", "book_to_market"],
+    "momentum": ["momentum_12_1"],
+    "quality": ["roe", "gross_profitability"],
+    "low_volatility": ["neg_volatility_12m"],
+}
+
+config = BacktestConfig(
+    top_quantile=0.20,
+    transaction_cost_bps=10.0,
+    annualization_factor=12,
+)
+
+outputs = run_research_pipeline(
+    signals=signals,
+    forward_returns=forward_returns,
+    factor_columns=factor_columns,
+    config=config,
+)
+
+print(outputs["summary"])
+```
+
 ## Methodological Principles
 
 The analysis is built around safeguards that matter in empirical investment research:
 
 - no use of future information in portfolio formation;
-- explicit treatment of missing observations and outliers;
+- explicit treatment of missing observations and extreme values;
 - consistent rebalancing and holding-period assumptions;
 - separation of signal measurement from subsequent return evaluation;
+- explicit turnover and transaction-cost treatment;
 - benchmark-relative as well as absolute performance measurement;
 - transparent reporting of assumptions and limitations.
 
-Where feasible, the final backtest will also account for turnover and transaction-cost sensitivity so that statistical performance is not confused with implementable performance.
+## Running the Project
+
+Create a Python environment and install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run the automated checks:
+
+```bash
+pytest -q
+```
+
+GitHub Actions also runs the test suite automatically on pushes and pull requests.
 
 ## Performance Evaluation
 
-The final analysis will report, at minimum:
+Once empirical data are validated, the final analysis will report, at minimum:
 
 - annualized return;
 - annualized volatility;
@@ -82,13 +156,15 @@ The final analysis will report, at minimum:
 
 Charts and summary tables will be stored in `figures/` and `results/` rather than embedded as unsupported headline claims.
 
-## Reproducibility
+## Data Integrity & Reproducibility
 
-The implementation is being organized as modular Python research code rather than a single opaque notebook. Dependencies are recorded in `requirements.txt`, and `data/` documents data provenance and redistribution restrictions.
+Raw third-party datasets should not be committed when redistribution is restricted. The `data/` directory instead documents provenance, coverage, field definitions, and cleaning rules. Local binary datasets are excluded through `.gitignore`.
+
+The core research logic is modular rather than concentrated in one opaque notebook, making assumptions easier to inspect, test, and change.
 
 ## Limitations
 
-Historical backtests are sensitive to data quality, universe definition, factor specification, rebalancing assumptions, transaction costs, and treatment of delisted securities. Backtested performance does not represent live investment performance and should not be interpreted as a guarantee of future returns.
+Historical backtests are sensitive to data quality, universe definition, survivorship bias, factor specification, rebalancing assumptions, point-in-time availability of accounting information, transaction costs, and treatment of delisted securities. Backtested performance does not represent live investment performance and should not be interpreted as a guarantee of future returns.
 
 ## Author
 
