@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+<rect width="1200" height="760" fill="white"/>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#111}.title{font-size:34px;font-weight:700}.sub{font-size:17px;fill:#555}.label{font-size:20px}.value{font-size:27px;font-weight:700}.axis{font-size:15px;fill:#666}.grid{stroke:#e8e8e8;stroke-width:1}.bar1{fill:#8f8f8f}.bar2{fill:#202020}.bar3{fill:#b8b8b8}.note{font-size:16px;fill:#555}
+</style>
+<text x="105" y="62" class="title">CAGR Before and After the Historical-Universe Correction</text>
+<text x="105" y="98" class="sub">Same four-factor specification; only the historical investment universe was changed</text>
+
+<!-- chart area -->
+<line x1="125" y1="600" x2="1080" y2="600" stroke="#222" stroke-width="1.2"/>
+<line x1="125" y1="516" x2="1080" y2="516" class="grid"/>
+<line x1="125" y1="432" x2="1080" y2="432" class="grid"/>
+<line x1="125" y1="348" x2="1080" y2="348" class="grid"/>
+<line x1="125" y1="264" x2="1080" y2="264" class="grid"/>
+<line x1="125" y1="180" x2="1080" y2="180" class="grid"/>
+
+<text x="78" y="605" class="axis">0%</text>
+<text x="70" y="521" class="axis">5%</text>
+<text x="62" y="437" class="axis">10%</text>
+<text x="62" y="353" class="axis">15%</text>
+<text x="62" y="269" class="axis">20%</text>
+<text x="62" y="185" class="axis">25%</text>
+
+<!-- bars -->
+<rect x="215" y="191" width="190" height="409" rx="2" class="bar1"/>
+<rect x="505" y="354" width="190" height="246" rx="2" class="bar2"/>
+<rect x="795" y="274" width="190" height="326" rx="2" class="bar3"/>
+
+<!-- value labels -->
+<text x="310" y="158" class="value" text-anchor="middle">24.32%</text>
+<text x="600" y="321" class="value" text-anchor="middle">14.63%</text>
+<text x="890" y="241" class="value" text-anchor="middle">19.39%</text>
+
+<!-- category labels -->
+<text x="310" y="643" class="label" text-anchor="middle">Original V2</text>
+<text x="600" y="643" class="label" text-anchor="middle">Historical V2</text>
+<text x="890" y="643" class="label" text-anchor="middle">SPY</text>
+
+<line x1="400" y1="690" x2="800" y2="690" stroke="#d7d7d7" stroke-width="1"/>
+<text x="600" y="724" class="note" text-anchor="middle">Historical-universe correction reduced V2 CAGR by 9.69 percentage points</text>
+</svg>
