@@ -4,6 +4,8 @@ Testing whether a sector-relative combination of Value, Quality, Financial Stren
 
 **Python · SEC EDGAR / XBRL · Historical S&P 500 Constituents · April 2020 to April 2026**
 
+**[View the portfolio page →](https://melodious-pendulum-9e4.notion.site/Multi-Factor-Equity-Research-Backtesting-3bfb69512230800c939bc5d42d278583)**
+
 ## At a glance
 
 | Metric | Historical V2 | SPY |
