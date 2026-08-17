@@ -47,7 +47,7 @@ In the April 2020 comparison:
 
 I rebuilt date-specific S&P 500 universes, expanded historical price and sector coverage for former constituents, and reran the **same factor definitions and equal weights**.
 
-![CAGR before and after universe correction](figures/cagr_bias_correction.svg)
+![CAGR before and after universe correction](figures/cagr_bias_correction_v3.svg)
 
 ### Corrected annual returns
 
