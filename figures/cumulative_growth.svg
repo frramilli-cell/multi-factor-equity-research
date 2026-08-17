@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="560" viewBox="0 0 1000 560">
+<rect width="1000" height="560" fill="white"/>
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#111}.title{font-size:28px;font-weight:700}.sub{font-size:14px;fill:#555}.axis{font-size:13px;fill:#555}.legend{font-size:14px}.grid{stroke:#e6e6e6;stroke-width:1}.base{stroke:#222;stroke-width:1.2}.v2{fill:none;stroke:#7a7a7a;stroke-width:3}.hist{fill:none;stroke:#111;stroke-width:4}.spy{fill:none;stroke:#808080;stroke-width:3;stroke-dasharray:9 7}.dot1{fill:#7a7a7a}.dot2{fill:#111}.dot3{fill:#808080}
+</style>
+<text x="70" y="52" class="title">Growth of $1</text>
+<text x="70" y="78" class="sub">Annual holding-period returns, April 2020 to April 2026</text>
+<!-- grid -->
+<line x1="80" y1="450" x2="930" y2="450" class="base"/>
+<line x1="80" y1="370" x2="930" y2="370" class="grid"/>
+<line x1="80" y1="290" x2="930" y2="290" class="grid"/>
+<line x1="80" y1="210" x2="930" y2="210" class="grid"/>
+<line x1="80" y1="130" x2="930" y2="130" class="grid"/>
+<text x="45" y="454" class="axis">$1.0</text><text x="45" y="374" class="axis">$1.5</text><text x="45" y="294" class="axis">$2.0</text><text x="45" y="214" class="axis">$2.5</text><text x="45" y="134" class="axis">$3.0</text>
+<!-- x labels -->
+<text x="75" y="480" class="axis">2020</text><text x="210" y="480" class="axis">2021</text><text x="345" y="480" class="axis">2022</text><text x="480" y="480" class="axis">2023</text><text x="615" y="480" class="axis">2024</text><text x="750" y="480" class="axis">2025</text><text x="885" y="480" class="axis">2026</text>
+<!-- original V2 values 1,1.8667,1.9199,1.8310,3.3722,3.2835,3.692 -->
+<polyline points="90,450 225,311 360,302 495,316 630,69 765,83 900,18" class="v2"/>
+<!-- historical V2 values 1,1.9012,2.0086,1.7625,2.3880,2.1595,2.2688 -->
+<polyline points="90,450 225,306 360,289 495,328 630,228 765,265 900,247" class="hist"/>
+<!-- SPY values 1,1.6536,1.8941,1.7477,2.2528,2.4511,2.8958 -->
+<polyline points="90,450 225,345 360,307 495,330 630,249 765,218 900,147" class="spy"/>
+<g><circle cx="90" cy="450" r="4" class="dot2"/><circle cx="225" cy="306" r="4" class="dot2"/><circle cx="360" cy="289" r="4" class="dot2"/><circle cx="495" cy="328" r="4" class="dot2"/><circle cx="630" cy="228" r="4" class="dot2"/><circle cx="765" cy="265" r="4" class="dot2"/><circle cx="900" cy="247" r="4" class="dot2"/></g>
+<!-- legend -->
+<line x1="585" y1="515" x2="620" y2="515" class="v2"/><text x="628" y="520" class="legend">Original V2</text>
+<line x1="720" y1="515" x2="755" y2="515" class="hist"/><text x="763" y="520" class="legend">Historical V2</text>
+<line x1="860" y1="515" x2="895" y2="515" class="spy"/><text x="903" y="520" class="legend">SPY</text>
+</svg>
